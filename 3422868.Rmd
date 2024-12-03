@@ -1,0 +1,474 @@
+---
+title: "MATPMDA PORTFOLIO FITNESS ACTIVITY"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document:
+    df_print: paged
+---
+
+![Ovie](ovie.jpg){width="250"}
+
+Resting heart rate can be defined as the number of times the heart beats in one minute while at rest.
+
+It may be used to indicate one's basic fitness level. Typically, if the resting heart rate goes down over time, that may reflect the effectiveness of steady aerobic exercise.
+
+Aerobic excercise includes activities that increase your breathing and heart rate such as walking, jogging, cycling and swimming.
+
+One way to monitor the intensity of your activity is to check your heart rate against the estimated maximum heart rate for your age.
+
+In this portfolio, I gathered data on my walking activity and I am investigating my average **resting heart rate**(**BPM**) on a week day versus a weekend
+
+My data was generated using my Samsung smart watch, and Samsung health app to track my walks over period of days, not necessarily consecutive days. The data contains 31 rows and 5 columns.
+
+| column   | metrics          |
+|----------|------------------|
+| Distance | km               |
+| Duration | mins             |
+| Steps    | count            |
+| AvgBpm   | beats per minute |
+| Week     | weekend/weekday  |
+
+: Table 1.1. Data metrics
+
+The null hypothesis is that the average resting heart rate is same on week day and weekend, while the alternative hypothesis is that the resting heart rate is not same on weekday and weekend. H(o): bpm(weekend) == bpm(weekday) and H(1): bpm(weekend) =/= bpm(weekday). The test is a 2-way test, as I could have a higher AvgBpm on week days or higher AvgBpm on week ends.
+
+Let's summarize the data to get an idea of the structure of the data.
+
+```{r}
+```
+
+```{r}
+data = read.csv("fitness_activity_stats.csv", header = TRUE)
+tail(data)
+?read.csv
+```
+
+```{r}
+summary(data)
+```
+
+The dataset provides a snapshot of weekly physical activity. It shows a range of workout durations, distances, and heart rates. The data suggests that most workouts are moderate in intensity, with a median heart rate around 80 bpm. There are some high-intensity workouts, as indicated by the maximum heart rate of 110 bpm.
+
+```{r}
+distance <- data$Distance
+mu <- mean(distance)
+std <- sd(distance)
+
+# Plot histogram
+hist(distance, probability = TRUE, nclass = 14, main = "Histogram of Distance", xlab = "Distance", col = "lightblue", border = "black")
+
+# Calculate the density values for the points
+density_values <- dnorm(distance, mean=mu, sd=std)
+
+# Add points to the histogram
+points(distance, density_values, col="red", pch=19)
+
+abline(v = mu, col = "green", lwd = 2, lty = 2)
+```
+
+The distance is Gaussian distributed. The green vertical line signifies the average distance(5.775km) covered while walking.
+
+**Distribution Shape:**
+
+-   The histogram appears to have two peaks in the distribution. This suggests that there might be two distinct groups or clusters of distances.
+
+-   The distribution is skewed to the right. This means that there are more distances on the lower end of the scale and fewer on the higher end.
+
+**Central Tendency:**
+
+-   The mode, or most frequent value, appears to be around 2.
+
+-   There is another mode around 8.
+
+**Spread:**
+
+-   The range of the data is from 0 to 15.
+
+-   The distribution is relatively wide, indicating that the distances vary quite a bit.
+
+**Outliers:**
+
+-   There are a few data points that appear to be outliers, particularly on the higher end of the distribution.
+
+**Additional Observations:**
+
+-   The green dotted line indicates the mean distances I walked.
+
+-   The red dots overlaid on the histogram the gaussian distribution of the distances.
+
+```{r}
+bpm <- data$AvgBpm
+mu <- mean(bpm)
+std <- sd(bpm)
+(table(bpm))
+# Plot histogram
+hist(bpm, probability = TRUE, nclass = 14, main = "Histogram of Avg Bpm", xlab = "Avg Bpm", col = "lightblue", border = "black")
+
+# Calculate the density values for the points
+density_values <- dnorm(bpm, mean=mu, sd=std)
+
+# Add points to the histogram
+points(bpm, density_values, col="red", pch=19)
+
+abline(v = mu, col = "green", lwd = 2, lty = 2)
+```
+
+The AvgBpm is Gaussian distributed. The green vertical line signifies the average Bpm(79.51bpm)
+
+**Distribution Shape:**
+
+-   The histogram appears to be bimodal, meaning there are two peaks in the distribution. This suggests that there might be two distinct groups or clusters of average BPM values.
+
+**Central Tendency:**
+
+-   The first mode, or most frequent Average Resting heart rate, is around 60 BPM. This likely represents days with lower heart rates, most likely due to more walking activity.
+
+-   The second mode is of resting heart rates around 80 BPM. This group might represent days of less activity or excess activity. Which we will later investigate.
+
+**Spread:**
+
+-   The distribution is relatively wide, indicating that the average BPM values vary quite a bit.
+
+-   The range of the Avgerage Resting heart rate is from 65BPM to 110 BPM.
+
+**Outliers:**
+
+-   There are a few outliers on the higher end of the distribution, around 110 BPM. These could be due to measurement errors, cause it doesn't actually make sense. Cause more activity should need to better resting heart rates.
+
+**Additional Observations:**
+
+-   The green dotted line represents the mean resting heart rates of 80.14BPM.
+
+-   The red dots overlaid on the histogram represents the cumulative density function for the distribution
+
+```         
+I want to draw a boxplot so, I can see the distribution of distance and AvgBpm. So I can clearly detect outliers.
+```
+
+```{r}
+boxplot(data$Distance, col = "lightblue", border = "black", ylab = "Distance")
+
+```
+
+1.  **Median**: The mid value of the distances is **5.605km**. This is the point where half of my distance values are below and half are above.
+
+2.  **Third Quartile (3rd Qu.)**: The value at the 75th percentile is **8.633km**. This indicates that 75% of the distances I covered fall within here. The top whiskers signifies the maximum value of Distances covered is 16.53km, outliers been exluded
+
+3.  **Outliers**: From the boxplot there are no visible outliers in the distribution of my distances covered.
+
+4.  **First Quartile (1st Qu.)**: The value at the 25th percentile is **2.54km**. This means that 25% of the distances fall below here. The whiskers at this point signifies the minimum value of 0.56km, barring any outliers, which is also happens to be the minimum distance I covered.
+
+```{r}
+boxplot(data$AvgBpm, col = "lightblue", border = "black", ylab="AvgBpm")
+summary(data$AvgBpm)
+```
+
+1.  **Median**: The mid value of my resting heart rates is **80.00bpm**. This is the point where half of the data values are below and half are above.
+
+2.  **Third Quartile (3rd Qu.)**: My resting heart rates at the 75th percentile is **84.00bpm**. This indicates that 75% of my resting heart rates are below this resting heart rate of 84bpm . The top whiskers signifies the maximum value of my resting heart rates is about 89bpm, excluding any outliers.
+
+3.  **Outliers**: An outlier exists in my resting heart rates which is 110bpm.
+
+4.  **First Quartile (1st Qu.)**: The value at the 25th percentile is **75bpm**. This means that 25% of my resting heart rates are below this value. The whiskers at this point signifies the minimum value in the 25th percentile of **65bpm**
+
+```{r}
+plot(AvgBpm ~ Distance, data = data, xlab = "Distance", ylab = "Average Bpm")
+sort(bpm)
+```
+
+From the scatter plot, I can observe the distribution of my AvgBpm:
+
+1.  **Relationship:** There appears to be no clear linear relationship between my AvgBpm and Distance. The average resting heart rate does not seem to increase with distance.
+
+2.  **Range:** My average resting heart rates vary from approximately around 62bpm to 89bpm, while the "Distance" values range from 0.1 to around 15.
+
+3.  **Clustering:** There seems to be a cluster of points around the resting heart rates of around 80 and 85 and "Distance" values between 5 and 10. The values are spread out, with most of them clustering between 65 and 85
+
+4.  **Outliers:** There are 2 resting heart rates that deviate from the main cluster, These could be considered potential outliers.
+
+Next I need to investigate the p-value, assuming the null is true, of obtaining an observation, or an observation more extreme. In this context the observation, is having a higer Avgbpm at weekends than during weekdays i.e the resting heart rates at the weekends are different from the heart rates on weekdays.
+
+```{r}
+#selecting rows where week == "Weekday"
+filter_weekday <- data$Week == "Weekday" & data$AvgBpm >= 75 
+filter_weekend <- data$Week == "Weekend" & data$AvgBpm >= 75
+
+week_days <- data[filter_weekday,]
+week_ends <- data[filter_weekend,]
+
+
+```
+
+```{r}
+t.test(week_days$AvgBpm, week_ends$AvgBpm)
+```
+
+```{r}
+
+```
+
+1.  **p-value:** 0.08965
+
+    This is the probability if the null hypothesis is true, of obtaining an observation or an observation more extreme. The null in this case is that, average resting heart rates on weekdays is not different from resting heart rates on weekends. The p-value (0.08965) is above the common significance level of 0.05. Therefore, we **fail to reject the null hypothesis**. This means that we don't have sufficient evidence to conclude that there is a significant difference in average resting heart rates between weekdays and weekends.  
+
+    **Alternative Hypothesis:** True difference in means is not equal to 0
+
+    This is the hypothesis being tested, is that the average resting heart rates on weekdays is different from the average heart rate on weekends.
+
+    **95% Confidence Interval:** -17.722266 to 1.535131
+
+    -   This interval estimates the true difference between the population means with 95% confidence. Since this interval includes 0, it suggests that there might not be a significant difference between the two groups(weekdays vs weekends).
+
+    -   **Mean of Resting heart rates (weekdays):** 80.68421
+
+    -   **Mean of resting heart rates (weekends):** 88.77778
+
+2.  **Linear Regression Analysis**
+
+```{r}
+# Plotting a scatter plot
+colors <- ifelse(data$Week == "Weekend", "lightgreen", "lightblue")
+
+plot(data$Distance, data$AvgBpm, col=colors, pch = 19, xlab = "Distance", ylab = "AvgBpm", main = "Scatter Plot of Distance Vs AvgBpm with Regression Line")
+
+# Adding the regression line
+abline(lm(AvgBpm ~ Distance, data = data), col = "red")
+
+# Adding a legend
+legend("topleft", legend = c("Weekend", "Weekday", 'regression Line'), col = c("lightgreen", "lightblue", "red"), pch = c(19, 19, NA), lty = c(NA, NA, 1))
+
+
+```
+
+Fr
+
+```{r}
+summary(lm(formula = AvgBpm ~ Distance, data = data))
+
+```
+
+1.  From the scatter plot, I can observe the distribution of my AvgBpm Vs Distance covered:
+
+    1.  **Relationship:** There appears to be no clear linear relationship between my AvgBpm and Distance. The average resting heart rate does not seem to increase with distance.
+
+    2.  **Range:** My average resting heart rates vary from approximately around 62bpm to 89bpm, while the "Distance" values range from 0.1 to around 15.
+
+    3.  **Clustering:** There seems to be a cluster of points around the resting heart rates of around 75bpm and 87bpm. The data points seem to form two distinct clusters:
+
+        a\. **Weekend:** This cluster, represented by green dots, appears to be more spread out, with a slightly higher average resting heart rate for a given distance compared to the weekday cluster.
+
+        b\. **Weekday:** This cluster, represented by blue dots, is more compact and appears to have a slightly lower average heart rate for a given distance compared to the weekend cluster.
+
+        This could be interpreted as me doing more walking activity during weekdays compared to weekends. This reinforces the fact that, I travel long distances from Lanark to Stirling to get to school on weekdays compared to weekends, which I am mostly indoors.
+
+    4.  **Outliers:** There are 2 resting heart rates that deviate from the main cluster, These could be considered potential outliers. May be due to inaccurate measurements, or variable weather conditions on those days. This could even be due the fact that wrist watch was not properly charged on those days. This could even be attributed to individual fitness levels on those days.
+
+        In the future I will probably get properly calibrated devices to carryout the tests.
+
+2.  **Regression Line (Red Line)**:
+
+    The regression line, which represents the best fit line through between distance and average resting heart rate
+
+3.  **Strength of Relationship**:
+
+    -   The closeness of the data points to the regression line indicates a strong relationship. We can notice about two outliers. The data is split into two parts, some on the top of the line and others below, indicating 2 categories of datawhat
+
+    To gain deeper insights, it would be beneficial to quantify the strength of the relationship between distance and heart rate for both weekday and weekend data, calculating correlation coefficients:
+
+    ```{r}
+    data_weekday = data[data$Week=="Weekday" & data$AvgBpm <= 80, ]
+
+    # Plotting a scatter plot
+    #colors <- ifelse(data_weekday$Week == "Weekend", "lightgreen", "lightblue")
+
+    plot(data_weekday$Distance, data_weekday$AvgBpm, col=colors, pch = 19, xlab = "Distance", ylab = "AvgBpm", main = "Scatter Plot of Distance Vs AvgBpm with Regression Line")
+
+    # Adding the regression line
+    abline(lm(AvgBpm ~ Distance, data = data_weekday), col = "red")
+
+    # Adding a legend
+    legend("topleft", legend = c("Weekend", "Weekday", 'regression Line'), col = c("lightgreen", "lightblue", "red"), pch = c(19, 19, NA), lty = c(NA, NA, 1))
+
+    summary(lm(formula = AvgBpm ~ Distance, data = data_weekday))
+    ```
+
+    Based on the given statistics:
+
+    **Model Fit:** The model explains about 52% of the variability in the dependent variable, which is moderate.
+
+    **Statistical Significance:** The model is statistically significant, indicating that the independent variable(s) have a significant impact on the dependent variable.
+
+    **Prediction Accuracy:** The residual standard error of 2.929 suggests that, on average, the model's predictions are off by about 2.929 units.
+
+    The relationship between the variables might not be linear, and a linear regression model may not be the best fit. Better still we might need to add more variables or transform variables.
+
+    ```{r}
+    data_weekday = data[data$Week=="Weekday" & data$AvgBpm <= 80, ]
+
+    # Plotting a scatter plot
+    #colors <- ifelse(data_weekday$Week == "Weekend", "lightgreen", "lightblue")
+
+    plot(log(data_weekday$Distance), log(data_weekday$AvgBpm), col=colors, pch = 19, xlab = "Distance", ylab = "AvgBpm", main = "Scatter Plot of Distance Vs AvgBpm with Regression Line")
+
+    # Adding the regression line
+    abline(lm(log(AvgBpm) ~ log(Distance), data = data_weekday), col = "red")
+
+    # Adding a legend
+    legend("topleft", legend = c("Weekend", "Weekday", 'regression Line'), col = c("lightgreen", "lightblue", "red"), pch = c(19, 19, NA), lty = c(NA, NA, 1))
+
+    summary(lm(formula = log(AvgBpm) ~ log(Distance), data = data_weekday))
+    ```
+
+    1.  Based on the given statistics there is an improvement on the R-squared of about 0.0164:
+
+        **Model Fit:** The model explains about 54% of the variability in the dependent variable, which is moderate.
+
+        **Statistical Significance:** The model is statistically significant, indicating that the independent variable(s) have a significant impact on the dependent variable.
+
+        **Prediction Accuracy:** The residual standard error of 0.03955 suggests that, on average, the model's predictions are off by about 0.03955 units.
+
+    2.  Lets try another transformation. Taking Square root of the variables.
+
+    ```{r}
+    data_weekday = data[data$Week=="Weekday" & data$AvgBpm <= 80, ]
+
+    # Plotting a scatter plot
+    #colors <- ifelse(data_weekday$Week == "Weekend", "lightgreen", "lightblue")
+
+    plot(sqrt(data_weekday$Distance), sqrt(data_weekday$AvgBpm), col=colors, pch = 19, xlab = "Distance", ylab = "AvgBpm", main = "Scatter Plot of Distance Vs AvgBpm with Regression Line")
+
+    # Adding the regression line
+    abline(lm(sqrt(AvgBpm) ~ sqrt(Distance), data = data_weekday), col = "red")
+
+    # Adding a legend
+    legend("topleft", legend = c("Weekend", "Weekday", 'regression Line'), col = c("lightgreen", "lightblue", "red"), pch = c(19, 19, NA), lty = c(NA, NA, 1))
+
+    summary(lm(formula = sqrt(AvgBpm) ~ sqrt(Distance), data = data_weekday))
+    ```
+
+    1.  Based on the given statistics there is an improvement on the R-squared of about 0.0086. And the residual standard error of 0.03955 reduced to 0.167
+
+    2.  Let's add more more variables.
+
+    ```{r}
+    data_weekday = data[data$Week=="Weekday" & data$AvgBpm <= 80, ]
+
+    # Plotting a scatter plot
+    #colors <- ifelse(data_weekday$Week == "Weekend", "lightgreen", "lightblue")
+
+    plot((data_weekday$Distance) * data_weekday$Duration, (data_weekday$AvgBpm), pch = 19, xlab = "Distance", ylab = "AvgBpm", main = "Scatter Plot of Distance Vs AvgBpm with Regression Line")
+
+    # Adding the regression line
+    abline(lm((AvgBpm) ~ (Distance * Duration), data = data_weekday), col = "red")
+
+    # Adding a legend
+    legend("topleft", legend = c("Weekend", "Weekday", 'regression Line'), pch = c(19, 19, NA), lty = c(NA, NA, 1))
+
+    summary(lm(formula = (AvgBpm) ~ (Distance * Duration), data = data_weekday))
+    ```
+
+4.  Based on the given statistics there is no improvement on the R-squared after adding more variables.
+
+5.  Lets do the weekend version.
+
+    ```{r}
+    data_weekend = data[data$Week=="Weekend" & data$AvgBpm <= 80, ]
+
+    # Plotting a scatter plot
+    #colors <- ifelse(data_weekday$Week == "Weekend", "lightgreen", "lightblue")
+
+    plot(log(data_weekend$Distance), log(data_weekend$AvgBpm), pch = 19, xlab = "Distance", ylab = "AvgBpm", main = "Scatter Plot of Distance Vs AvgBpm with Regression Line")
+
+    # Adding the regression line
+    abline(lm(log(AvgBpm) ~ log(Distance), data = data_weekend), col = "red")
+
+
+    summary(lm(formula = log(AvgBpm) ~ log(Distance), data = data_weekend))
+    ```
+
+6.  Next let's implement some transformations to see if we can get better fit regression line(R-squared \<= 1).
+
+    ```{r}
+    # Plotting a scatter plot of Steps Vs AvgBPM
+    colors <- ifelse(data$Week == "Weekend", "lightgreen", "lightblue")
+
+    data_steps = (data$Steps)
+    #data_bpm = (data$AvgBpm)
+
+    plot(data$Steps, data$AvgBpm, col=colors, pch = 19, xlab = "Steps", ylab = "AvgBpm", main = "Scatter Plot of Steps Vs AvgBpm  with Regression Line")
+
+    # Adding the regression line
+    abline(lm((AvgBpm) ~ (Steps), data=data), col = "red")
+
+    # Adding a legend
+    legend("topleft", legend = c("Weekend", "Weekday", 'regression Line'), col = c("lightgreen", "lightblue", "red"), pch = c(19, 19, NA), lty = c(NA, NA, 1))
+    summary(lm((AvgBpm) ~ (Steps), data = data))
+
+    ```
+
+```{r}
+# Plotting a scatter plot
+colors <- ifelse(data$Week == "Weekend", "lightgreen", "lightblue")
+
+duration = (data$Duration)
+#data_bpm = (data$AvgBpm)
+
+plot(duration, data$AvgBpm, col=colors, pch = 19, xlab = "Duration", ylab = "AvgBpm", main = "Scatter Plot of Duration Vs AvgBpm  with Regression Line")
+
+# Adding the regression line
+abline(lm((AvgBpm) ~ (Duration), data=data), col = "red")
+
+# Adding a legend
+legend("topleft", legend = c("Weekend", "Weekday", 'regression Line'), col = c("lightgreen", "lightblue", "red"), pch = c(19, 19, NA), lty = c(NA, NA, 1))
+summary(lm((AvgBpm) ~ (Duration), data = data))
+```
+
+```{r}
+# Plotting a scatter plot
+colors <- ifelse(data$Week == "Weekend", "lightgreen", "lightblue")
+
+#data_steps = log(data$Distance)
+#data_bpm = log(data$AvgBpm)
+
+plot(log(data$Distance), log(data$AvgBpm), col=colors, pch = 19, xlab = "Distance", ylab = "AvgBpm", main = "Scatter Plot of Steps Vs AvgBpm  with Regression Line")
+
+# Adding the regression line
+abline(lm(log(AvgBpm) ~ log(Distance), data=data), col = "red")
+
+# Adding a legend
+legend("topleft", legend = c("Weekend", "Weekday", 'regression Line'), col = c("lightgreen", "lightblue", "red"), pch = c(19, 19, NA), lty = c(NA, NA, 1))
+summary(lm(log(AvgBpm) ~ log(Distance), data = data))
+```
+
+Fisher's Exact Test
+
+```{r}
+bpm_weekday_greater = data[(data$AvgBpm > 75 & data$Week=="Weekday"), ]
+bpm_weekday_less = data[(data$AvgBpm <= 75 & data$Week=="Weekday"), ]
+bpm_weekend_greater = data[data$AvgBpm > 75 & data$Week=="Weekend", ]
+bpm_weekend_less = data[data$AvgBpm <= 75 & data$Week=="Weekend", ]
+table <- matrix(c(nrow(bpm_weekday_greater), nrow(bpm_weekday_less), nrow(bpm_weekend_greater), nrow(bpm_weekend_less)), 2, 2, byrow = TRUE)
+dimnames(table) <- list(week=c("Weekday", "Weekend"), AvgbBpm=c("G", "L"))
+table
+fisher.test(table, alternative = "less")
+
+```
+
+-   
+
+-   **Interpreting the p-value:**
+
+-   **p-value = 0.7565:** The probability, if the null hypothesis is True, of obtaining an observation, or observation more extreme. This indicates that there is no significant evidence to reject the null hypothesis.
+
+-   **Since the p-value is greater than the typical significance level of 5%, we fail to reject the null hypothesis.** This means we do not have enough evidence to conclude that there is a difference in bpm between weekends and weekdays based on my sample data.
+
+-   **Conclusion:** There is not enough evidence to suggest a significant association between the two categorical variables. The odds ratio of 2.105678 indicates that one group is roughly twice as likely as the other to experience the outcome, but this difference is not statistically significant.
+
+**Confidence Interval:** The 95% confidence interval for the odds ratio is (0, 5.555). This wide interval suggests a large degree of uncertainty in the estimate.
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
