@@ -1,0 +1,27 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+mean(rnorm(10))
+mean(rnorm(10))
+mean(rnorm(10))
+```
+
+```{r}
+xbar <- replicate(5, mean(rnorm(10, mean = 7)))
+xbar
+```
+
+```{r}
+hist(replicate(1e5, mean(rnorm(10, mean = 7))), main="Sample means", xlab = "mean")
+```
+
+```{r}
+hist(replicate(1000, mean(rnorm(10, mean = 7))), main="Sample means", xlab = "mean")
+```
+
+```{r}
+qnorm(c(0.025, 0.975), 0.9646667, 0.03888898)
+```

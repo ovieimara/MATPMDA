@@ -1,0 +1,94 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code.
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*.
+
+```{r}
+plot(disp ~ hp, data=mtcars)
+```
+
+```{r}
+stem(mtcars$hp)
+```
+
+```{r}
+boxplot(hp ~ disp, data=mtcars)
+```
+
+```{r}
+stem(mtcars$disp)
+```
+
+```{r}
+sort(mtcars$disp)
+```
+
+```{r}
+stem(sort(mtcars$disp))
+```
+
+Bin(10, 0.3)
+
+```{r}
+dbinom(5, 10, 0.3)
+```
+
+we can confirm this using random distribution
+
+```{r}
+table(rbinom(1e6, 10, 0.3) == 5)/1e6
+```
+
+probability 6 or fewer are fishes
+
+```{r}
+pbinom(6, 10, 0.3)
+```
+
+```{r}
+sum(dbinom(0:6, 10, 0.3))
+```
+
+```{r}
+table(rbinom(1e6, 10, 0.3) <=6)/1e6
+```
+
+```{r}
+rbinom(10, 10, 0.3)
+```
+
+```{r}
+```
+
+```{r}
+table(rbinom(1e6, 10, 0.3) < 10)/1e6 - table(rbinom(1e6, 10, 0.3) == 0)/1e6
+```
+
+```{r}
+pbinom(9, 10, 0.3) - pbinom(0, 10, 0.3) 
+```
+
+```{r}
+sum(dbinom(1:9, 10, 0.3))
+```
+
+```{r}
+1 - dbinom(0, 10, 0.3) - dbinom(10, 10, 0.3)
+```
+
+```{r}
+exp = np = 10 * 0.3
+exp
+std = sqrt(exp * (1-0.3))
+std
+```
+
+```{r}
+mean(rbinom(10, 10, 0.3))
+var(rbinom(10, 10, 0.3))
+sd(rbinom(10, 10, 0.3))
+```
