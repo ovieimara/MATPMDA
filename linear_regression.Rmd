@@ -3,16 +3,42 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code.
+```{r}
+plot(mpg ~ wt, data=mtcars, main="Efficiency vs Weight")
+```
+```{r}
+lm(mpg~wt, data=mtcars)
+```
+```{r}
+plot(mpg ~ wt, data=mtcars, main="Efficiency as a function of Car Weight")
+abline(lm(mpg ~ wt, data=mtcars))
+```
+```{r}
+summary(lm(mpg ~ wt, data=mtcars))
+```
+The p-value is, if the null is true, of obtaining the observation, or an observation more extreme. In this case the null hypothesis is that $H_0: B=0$ and the observation is $H_1: B=-5.344$.
+The p-value tells us that the linear regression line is significant since the p-value is less that the significance level of 5%. So we reject the null hypothesis. So there is a correlation between mpg and weight of the vehicle.
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*.
+In terms of the strength of the correlation R-squared value, shows us a considerably tight correlation between mpg and weight.
 
 ```{r}
-plot(cars)
+light <- data.frame(experiment=letters[c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5)], speed=c(85, 74, 90, 107, 93, 85, 95, 98, 98, 88, 100, 98, 93, 65, 76, 81, 100, 100, 96, 96, 96, 94, 96, 94, 88, 80, 85, 88, 90, 84, 83, 79, 81, 88, 88, 83, 80, 79, 76, 80, 88, 88, 88, 86, 72, 72, 62, 86, 97, 95, 88, 91, 85, 87, 84, 84, 85, 84, 84, 84, 89, 81, 81, 82, 80, 77, 76, 74, 75, 76, 91, 92, 89, 86, 88, 72, 84, 85, 85, 78, 89, 84, 78, 81, 76, 81, 79, 81, 82, 85, 87, 87, 81, 74, 81, 94, 95, 80, 81, 87))
+head(light)
+```
+```{r}
+boxplot(speed ~ experiment, data=light, col='lightblue')
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+```{r}
+summary(aov(speed ~ experiment, data=light))
+```
+```{r}
+summary(lm(speed ~ experiment, data=light))
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
+```
+```{r}
+plot(light$experiment,light$speed, xlim = c(1, 5))
+#abline(lm(speed ~ experiment, data=light))
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+```
+

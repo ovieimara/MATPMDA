@@ -3,16 +3,37 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code.
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*.
-
 ```{r}
-plot(cars)
+loaves <- c(804, 804, 800, 797, 805, 800, 810, 803, 806, 800, 801, 802, 800, 808, 806, 804, 810, 799, 804, 803, 805, 803, 804, 793, 808, 810, 801, 802, 797, 802)
+length(loaves)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+```{r}
+qnorm(c(0.025, 0.975), 803, 0.729)
+```
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
+```{r}
+x = 803
+z = qnorm(c(0.025, 0.975))
+c(x + qnorm(0.025)*0.729, x + qnorm(0.975) * 0.729)
+```
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+```{r}
+t.test(loaves)
+```
+
+```{r}
+t.test(loaves, conf.level = 0.99)
+```
+
+```{r}
+sem = sd(loaves)/sqrt(30)
+l = 1/2/100
+r = l + 0.99
+c(l, r)
+```
+
+```{r}
+interval = c(803 + qnorm(l)*sem, 803 + qnorm(r)*sem)
+interval
+```
